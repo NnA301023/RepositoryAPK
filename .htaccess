@@ -1,0 +1,21 @@
+# Prevent viewing of .htaccess file
+<Files .htaccess>
+    order allow,deny
+    deny from all
+</Files>
+
+# Prevent directory listings
+Options All -Indexes
+
+<IfModule mod_rewrite.c>
+	Options +FollowSymlinks
+    RewriteEngine on
+    RewriteCond %{SCRIPT_FILENAME} !-d
+    RewriteRule ^([^.]+)$ $1.php [NC,L]
+
+    # Ensure Authorization header is passed along
+    RewriteCond %{HTTP:Authorization} .
+    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+    ErrorDocument 404 /repos/404.php
+</IfModule>
